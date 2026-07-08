@@ -1,1 +1,993 @@
-placeholder
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>한의학 인출훈련 · 학습과학</title>
+<style>
+  :root{
+    --ink:#16130e; --panel:#201b14; --panel2:#2a2419; --line:#3c3427;
+    --hanji:#e7dcc4; --muted:#9d917a; --faint:#6f6552;
+    --jade:#79b394; --amber:#d2a648; --cinnabar:#c85a42; --indigo:#6f93b4;
+    --serif:"Batang","AppleMyungjo","Nanum Myeongjo","Songti SC",serif;
+    --sans:"Malgun Gothic","Apple SD Gothic Neo","Pretendard",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(120% 80% at 50% -10%, #211b13 0%, var(--ink) 60%) fixed,
+      var(--ink);
+    color:var(--hanji); font-family:var(--sans);
+    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+    line-height:1.55; min-height:100vh;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:22px 18px 96px}
+  .eyebrow{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint);
+    font-weight:700; margin:0 0 6px}
+  h1{font-family:var(--serif); font-weight:700; font-size:26px; letter-spacing:.02em; margin:0}
+  .sub{color:var(--muted); font-size:13.5px; margin:6px 0 0}
+  .brand{display:flex; align-items:baseline; gap:12px; padding-bottom:16px; border-bottom:1px solid var(--line); margin-bottom:20px}
+  .seal{font-family:var(--serif); color:var(--cinnabar); border:1.5px solid var(--cinnabar);
+    border-radius:5px; padding:4px 7px; font-size:15px; font-weight:700; line-height:1;
+    box-shadow:0 0 0 3px rgba(200,90,66,.09) inset}
+
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line); border-radius:14px; padding:20px; margin:14px 0;
+    box-shadow:0 1px 0 rgba(255,255,255,.02) inset, 0 10px 30px rgba(0,0,0,.25)}
+  .row{display:flex; gap:10px; flex-wrap:wrap}
+  .grow{flex:1 1 auto}
+  label.fld{display:block; font-size:12px; color:var(--muted); margin:0 0 6px; font-weight:600}
+
+  button{font-family:var(--sans); cursor:pointer; border-radius:9px; border:1px solid var(--line);
+    background:var(--panel2); color:var(--hanji); padding:11px 14px; font-size:14px; font-weight:600;
+    transition:transform .05s ease, background .12s ease, border-color .12s ease, color .12s ease}
+  button:hover{border-color:#57492f}
+  button:active{transform:translateY(1px)}
+  button:focus-visible{outline:2px solid var(--indigo); outline-offset:2px}
+  .primary{background:var(--jade); color:#10231a; border-color:transparent}
+  .primary:hover{background:#8cc4a6}
+  .ghost{background:transparent}
+  .seg{display:flex; gap:8px; flex-wrap:wrap}
+  .seg button{flex:1 1 0; min-width:0}
+  .chip{padding:7px 11px; font-size:12.5px; border-radius:999px}
+  .on{background:var(--panel); border-color:#6a8fb0; color:#cfe0ee; box-shadow:0 0 0 2px rgba(111,147,180,.15)}
+
+  .qtext{font-family:var(--serif); font-size:21px; line-height:1.5; margin:2px 0 4px; letter-spacing:.01em}
+  .atext{font-family:var(--serif); font-size:19px; line-height:1.62; color:#f1e8d3}
+  .meta{font-size:11.5px; color:var(--faint); letter-spacing:.02em}
+  .badge{display:inline-block; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--line); border-radius:5px; padding:2px 7px; font-weight:700}
+  .badge.rev{color:var(--indigo); border-color:#3a4a5a}
+
+  textarea, input[type=text]{width:100%; font-family:var(--sans); font-size:15px; color:var(--hanji);
+    background:var(--ink); border:1px solid var(--line); border-radius:9px; padding:11px 12px; resize:vertical}
+  textarea:focus, input:focus{outline:none; border-color:var(--indigo)}
+  textarea::placeholder,input::placeholder{color:#5c5340}
+
+  .divider{height:1px; background:var(--line); margin:16px 0}
+  .hint{font-size:12.5px; color:var(--muted)}
+  .why{font-size:12px; color:var(--faint); border-left:2px solid var(--line); padding-left:10px; margin:8px 0 0}
+
+  /* progress + boxes */
+  .status{display:flex; align-items:center; gap:14px; margin-bottom:4px}
+  .bar{flex:1; height:6px; background:var(--panel2); border-radius:99px; overflow:hidden; border:1px solid var(--line)}
+  .bar > i{display:block; height:100%; background:linear-gradient(90deg,var(--jade),var(--indigo)); width:0%}
+  .boxes{display:flex; gap:5px; align-items:flex-end; height:34px}
+  .boxes > span{flex:1; background:var(--panel2); border:1px solid var(--line); border-radius:3px 3px 0 0; min-height:4px; position:relative}
+  .boxes small{position:absolute; bottom:-15px; left:0; right:0; text-align:center; font-size:9px; color:var(--faint)}
+
+  .stat{display:flex; gap:18px; flex-wrap:wrap}
+  .stat .k{font-family:var(--serif); font-size:28px; line-height:1; color:#f1e8d3}
+  .stat .l{font-size:11px; color:var(--muted); letter-spacing:.04em; margin-top:3px}
+
+  .dday{display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line);
+    border-radius:12px; padding:14px 16px; margin-bottom:14px}
+  .dday .dnum{font-family:var(--serif); font-size:30px; line-height:1; color:#f1e8d3; letter-spacing:.02em}
+  .dday .dnum b{color:var(--cinnabar); font-weight:700}
+  .dday .dl{font-size:11px; color:var(--muted); letter-spacing:.03em; margin-top:4px}
+  .dday .pace{text-align:right}
+  .dday .pace .pk{font-family:var(--serif); font-size:23px; color:var(--jade); line-height:1}
+  .dday.warn .dnum b{color:var(--cinnabar)}
+  .ddaymini{font-size:11px; color:var(--muted)}
+  .ddaymini b{color:var(--hanji); font-family:var(--serif)}
+
+  .blank{display:inline-block; font-family:var(--serif); background:var(--panel); border:1px dashed #57492f;
+    border-radius:6px; padding:1px 9px; margin:2px 0; color:var(--amber); cursor:pointer; letter-spacing:.14em; font-size:18px}
+  .blank.shown{border-style:solid; border-color:var(--line); color:#f1e8d3; background:transparent; letter-spacing:.01em; cursor:default}
+  .blank:hover:not(.shown){border-color:var(--indigo)}
+  .blank:focus-visible{outline:2px solid var(--indigo); outline-offset:2px}
+  .sep{color:var(--faint)}
+  details.memo{border:1px solid var(--line); border-radius:9px; background:var(--ink); margin-top:2px}
+  details.memo summary{padding:9px 12px; font-size:12.5px; color:var(--muted)}
+  details.memo summary::after{content:"＋"}
+  details.memo[open] summary::after{content:"−"}
+  details.memo input{border:none; border-radius:0 0 9px 9px; background:transparent}
+  details.memo input:focus{border:none; outline:none}
+
+  .wkrow{display:flex; align-items:center; gap:10px; margin:9px 0 2px}
+  .wkrow .nm{font-size:13px; min-width:118px; max-width:118px; flex:0 0 auto; color:var(--hanji)}
+  .wkrow .track{flex:1; height:8px; background:var(--panel2); border:1px solid var(--line); border-radius:99px; overflow:hidden}
+  .wkrow .track > i{display:block; height:100%}
+  .wkrow .pct{font-family:var(--serif); font-size:14px; min-width:42px; text-align:right}
+  .wksub{font-size:11px; color:var(--faint); margin:0 0 8px 128px}
+  .wklist .li{padding:9px 0; border-top:1px solid var(--line); display:flex; gap:12px; align-items:baseline; justify-content:space-between}
+  .wklist .li:first-child{border-top:none}
+  .wklist .q{font-family:var(--serif); font-size:14px; color:var(--hanji); flex:1; line-height:1.4}
+  .wklist .tag{font-size:11.5px; color:var(--muted); white-space:nowrap}
+  .wkempty{color:var(--muted); font-size:13px; padding:6px 0; margin:0}
+
+  details{border:1px solid var(--line); border-radius:11px; background:var(--panel); margin:14px 0}
+  summary{cursor:pointer; padding:13px 16px; font-weight:700; font-size:13.5px; list-style:none; color:var(--hanji)}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"＋"; float:right; color:var(--muted)}
+  details[open] summary::after{content:"−"}
+  .princ{padding:2px 16px 14px}
+  .princ .p{padding:11px 0; border-top:1px solid var(--line)}
+  .princ .p:first-child{border-top:none}
+  .princ b{font-size:13.5px}
+  .princ .tag{font-size:10px; color:var(--cinnabar); letter-spacing:.14em; text-transform:uppercase; font-weight:700; margin-left:6px}
+  .princ p{margin:4px 0 0; font-size:12.5px; color:var(--muted)}
+
+  .toast{position:fixed; left:50%; bottom:18px; transform:translateX(-50%); background:var(--panel2);
+    border:1px solid var(--line); border-radius:10px; padding:10px 16px; font-size:13px; color:var(--hanji);
+    box-shadow:0 10px 30px rgba(0,0,0,.4); opacity:0; pointer-events:none; transition:opacity .2s}
+  .toast.show{opacity:1}
+  .hide{display:none !important}
+  .center{text-align:center}
+  .kbd{font-family:var(--sans); font-size:10.5px; color:var(--faint); border:1px solid var(--line); border-radius:4px; padding:1px 5px}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important} }
+  @media (max-width:520px){ .qtext{font-size:19px} .wrap{padding:16px 13px 96px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <span class="seal">醫</span>
+    <div>
+      <p class="eyebrow">인출 훈련 · Retrieval Practice</p>
+      <h1>한의학개론 학습기</h1>
+      <p class="sub">외우지 말고 <b>꺼내 쓰기</b>. 검증된 학습과학 원리로 설계했습니다.</p>
+    </div>
+  </div>
+
+  <div class="dday" id="ddayBar">
+    <div>
+      <div class="dnum">D<b>−<span id="ddayN">—</span></b></div>
+      <div class="dl">한의학개론 시험 · <span id="examDate">2027. 1. 1.</span></div>
+    </div>
+    <div class="pace">
+      <div class="pk">신규 <span id="paceN">—</span>장</div>
+      <div class="dl">하루 목표 · 오늘 복습 <span id="dueN">—</span>장</div>
+    </div>
+  </div>
+
+  <p class="hint center" id="paceInsight" style="margin:-4px 0 14px"></p>
+
+  <!-- ================= START ================= -->
+  <section id="start">
+    <div class="card">
+      <p class="eyebrow">세션 설정</p>
+
+      <label class="fld">인출 방식 <span class="hint">— 타이핑 없이 탭으로</span></label>
+      <div class="seg" id="recallSeg">
+        <button class="chip on" data-recall="self">셀프 체크</button>
+        <button class="chip" data-recall="progressive">단계 공개</button>
+      </div>
+      <p class="why">타이핑은 인출 효과의 필수 조건이 아닙니다. 덮고 떠올리기(covert retrieval)는 써서 인출하는 것과 효과가 동등합니다 <span class="meta">— Smith, Roediger & Karpicke, 2013</span>. <b>단계 공개</b>는 정답을 조각으로 가려 하나씩 떠올리게 합니다.</p>
+
+      <div class="divider"></div>
+
+      <label class="fld">연습 방식</label>
+      <div class="seg" id="modeSeg">
+        <button class="chip on" data-mode="interleave">교차 연습 · 과목 섞기</button>
+        <button class="chip" data-mode="block">과목 집중</button>
+      </div>
+      <div id="subjPick" class="hide" style="margin-top:10px">
+        <label class="fld">집중할 과목</label>
+        <select id="subjSel" style="width:100%; padding:10px; background:var(--ink); color:var(--hanji); border:1px solid var(--line); border-radius:9px; font-family:var(--sans); font-size:14px"></select>
+      </div>
+      <p class="why">교차 연습(interleaving)은 비슷한 개념을 구별하는 힘을 길러, 한 과목씩 몰아 하는 것(blocking)보다 시험 인출에 유리합니다 <span class="meta">— Rohrer & Taylor, 2007</span></p>
+
+      <div class="divider"></div>
+
+      <label class="fld">세션 크기 <span class="hint">— 한 번에 조금씩, 자주 (분산 연습)</span></label>
+      <div class="seg" id="sizeSeg">
+        <button class="chip" data-size="10">10문항</button>
+        <button class="chip on" data-size="20">20문항</button>
+        <button class="chip" data-size="35">35문항</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <label class="fld">하루 기본 목표 <span class="hint">— 새 카드 유입 상한 · 밀리면 자동 상향</span></label>
+      <div class="row" style="align-items:center; gap:10px">
+        <input type="number" id="dnVal" value="26" min="1" max="300" inputmode="numeric"
+          style="width:78px; font-family:var(--serif); font-size:20px; text-align:center; color:var(--hanji); background:var(--ink); border:1px solid var(--line); border-radius:9px; padding:8px">
+        <span class="hint">장 / 일</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row" style="align-items:center; justify-content:space-between">
+        <div>
+          <label class="fld" style="margin:0">양방향 인출 <span class="hint">정답 → 개념도 인출</span></label>
+        </div>
+        <button class="chip" id="revToggle">꺼짐</button>
+      </div>
+      <p class="why">한 방향으로만 외우면 반대 방향은 약합니다. 정의형 카드는 답에서 개념을 떠올리는 역방향도 섞습니다.</p>
+
+      <div class="divider"></div>
+      <button class="primary" id="startBtn" style="width:100%; padding:14px; font-size:15px">세션 시작 →</button>
+      <p class="center meta" id="poolInfo" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow" style="margin-bottom:10px">오늘까지</p>
+      <div class="stat">
+        <div><div class="k" id="stStreak">0</div><div class="l">연속 학습일</div></div>
+        <div><div class="k" id="stSeen">0</div><div class="l">익힌 카드</div></div>
+        <div><div class="k" id="stMastered">0</div><div class="l">숙달(5상자)</div></div>
+        <div><div class="k" id="stDue">0</div><div class="l">복습 예정</div></div>
+      </div>
+      <div class="divider"></div>
+      <p class="eyebrow">기억 상자 분포 <span class="hint" style="text-transform:none; letter-spacing:0">— 오른쪽일수록 오래 기억</span></p>
+      <div class="boxes" id="boxDist" style="margin-top:14px">
+        <span><small>1·재학습</small></span><span><small>2·1일</small></span><span><small>3·3일</small></span><span><small>4·7일</small></span><span><small>5·21일</small></span>
+      </div>
+      <div class="divider"></div>
+      <button class="ghost" id="weakBtn" style="width:100%">약점 분석 보기 →</button>
+    </div>
+
+    <details>
+      <summary>이 앱이 근거한 학습과학 원리 9가지</summary>
+      <div class="princ">
+        <div class="p"><b>능동 인출 (타이핑 불필요)</b><span class="tag">Testing Effect</span><p>답을 보기 전에 소리 내어/머릿속으로 떠올립니다. 덮고 떠올리기(covert retrieval)는 써서 인출하는 것과 효과가 같습니다. (Smith, Roediger & Karpicke, 2013)</p></div>
+        <div class="p"><b>단계 공개 · 자기 대조</b><span class="tag">Generation</span><p>정답을 조각으로 가려두고 하나씩 떠올린 뒤 탭해 확인합니다. 한자를 타이핑하지 않고도 인출 부담을 유지합니다.</p></div>
+        <div class="p"><b>간격 반복 + 시험일 거버너</b><span class="tag">Spacing</span><p>맞힌 카드는 점점 긴 간격(1→3→7→21일)으로 다시 나옵니다. 다만 <b>시험일(2027.1.1)이 가까울수록 간격이 자동 압축</b>되어, 남은 기간 안에 모든 카드를 다시 만나고 시험일을 넘겨 밀리지 않습니다. (Cepeda et al., 2006)</p></div>
+        <div class="p"><b>교차 연습</b><span class="tag">Interleaving</span><p>여러 과목을 섞어, 헷갈리는 개념을 변별하는 힘을 기릅니다.</p></div>
+        <div class="p"><b>메타인지 보정</b><span class="tag">Calibration</span><p>공개 전 확신도를 고르고, 실제 정답률과 대조해 <b>과신</b>을 드러냅니다. (Dunlosky & Rawson)</p></div>
+        <div class="p"><b>바람직한 어려움</b><span class="tag">Desirable Difficulty</span><p>재인(고르기)보다 인출(떠올리기)이 어렵지만 더 잘 남습니다. (Bjork)</p></div>
+        <div class="p"><b>즉각 피드백</b><span class="tag">Feedback</span><p>시도 직후 정답을 보여 오개념을 바로잡습니다.</p></div>
+        <div class="p"><b>정교화</b><span class="tag">Elaboration</span><p>“왜 그런가”를 한 문장으로 적어 의미 연결을 깊게 합니다. (self-explanation)</p></div>
+        <div class="p"><b>오답 우선</b><span class="tag">Error-focused</span><p>틀린 카드(1상자)를 먼저 배치해 약점에 시간을 집중합니다.</p></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= SESSION ================= -->
+  <section id="session" class="hide">
+    <div class="status">
+      <span class="meta" id="progLabel">1 / 20</span>
+      <div class="bar"><i id="progFill"></i></div>
+      <span class="ddaymini">D−<b id="ddayMini">—</b></span>
+      <button class="ghost chip" id="endBtn">종료</button>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:10px">
+        <span class="badge" id="chBadge">과목</span>
+        <span class="badge rev hide" id="revBadge">역방향</span>
+      </div>
+      <p class="eyebrow" id="qEyebrow">능동 인출 · 답을 떠올려 입력</p>
+      <p class="qtext" id="qText">—</p>
+
+      <!-- attempt -->
+      <div id="attemptBox">
+        <p class="hint" id="recallPrompt" style="margin:2px 0 0">답이 떠오르면 확신도를 고르고 공개하세요. 타이핑은 필요 없습니다.</p>
+        <details class="memo">
+          <summary>핵심어 메모 (선택 · 한글 가능)</summary>
+          <input type="text" id="memoInput" placeholder="예: 중완, 장문 … 떠올린 핵심어만">
+        </details>
+
+        <p class="eyebrow" style="margin:16px 0 6px">메타인지 · 얼마나 확신하나요?</p>
+        <div class="seg" id="confSeg">
+          <button class="chip" data-conf="1">없음</button>
+          <button class="chip" data-conf="2">낮음</button>
+          <button class="chip" data-conf="3">보통</button>
+          <button class="chip" data-conf="4">높음</button>
+        </div>
+        <button class="primary" id="revealBtn" style="width:100%; margin-top:14px" disabled>정답 공개 <span class="kbd">Space</span></button>
+        <p class="hint center" id="confHint" style="margin-top:8px">확신도를 먼저 고르면 공개됩니다</p>
+      </div>
+
+      <!-- reveal -->
+      <div id="revealBox" class="hide">
+        <div class="divider"></div>
+        <div id="yourAns" class="hide" style="margin-bottom:10px">
+          <p class="eyebrow">내 메모</p>
+          <p class="atext" style="color:var(--muted); font-size:16px" id="yourAnsText"></p>
+        </div>
+        <p class="eyebrow" id="aEyebrow">정답 · 즉각 피드백</p>
+        <p class="atext" id="aText">—</p>
+        <button class="ghost chip hide" id="aFullBtn" style="margin-top:8px">남은 답 전체 보기</button>
+        <p class="meta" id="srcText" style="margin-top:8px"></p>
+
+        <div id="elabWrap" style="margin-top:14px">
+          <p class="eyebrow">정교화 · 왜 그런가? 한 문장으로 <span class="hint" style="text-transform:none;letter-spacing:0">(선택)</span></p>
+          <input type="text" id="elabInput" placeholder="예: 木克土라서 脾가 상한다 …">
+        </div>
+
+        <p class="eyebrow" style="margin:16px 0 6px">스스로 채점</p>
+        <div class="seg" id="scoreSeg">
+          <button class="chip" data-score="wrong">틀림 <span class="kbd">1</span></button>
+          <button class="chip" data-score="hard">아쉬움 <span class="kbd">2</span></button>
+          <button class="chip" data-score="good">맞음 <span class="kbd">3</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="boxes" id="boxDistLive" style="margin:20px 4px 0">
+      <span><small>1</small></span><span><small>2</small></span><span><small>3</small></span><span><small>4</small></span><span><small>5</small></span>
+    </div>
+  </section>
+
+  <!-- ================= SUMMARY ================= -->
+  <section id="summary" class="hide">
+    <div class="card">
+      <p class="eyebrow">세션 완료</p>
+      <h1 style="font-size:22px" id="sumTitle">잘했어요</h1>
+      <div class="stat" style="margin-top:16px">
+        <div><div class="k" id="sumAcc">0%</div><div class="l">정답률(맞음)</div></div>
+        <div><div class="k" id="sumN">0</div><div class="l">푼 문항</div></div>
+        <div><div class="k" id="sumPromoted">0</div><div class="l">상자 승급</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">보정 곡선 · 확신도 vs 실제 정답률</p>
+      <p class="hint" style="margin:4px 0 12px">점이 <b style="color:var(--indigo)">기준선</b> 아래면 그 확신도에서 <b style="color:var(--cinnabar)">과신</b>, 위면 과소평가입니다.</p>
+      <div id="calibWrap"></div>
+      <p class="why" id="calibNote"></p>
+    </div>
+
+    <div class="row">
+      <button class="primary grow" id="againBtn">이어서 한 세션 더</button>
+      <button class="ghost" id="homeBtn">처음으로</button>
+    </div>
+    <p class="center hint" style="margin-top:14px" id="sumPace">분산 연습: 오늘 조금 더, 내일 또 오는 편이 한 번에 몰아치기보다 낫습니다.</p>
+  </section>
+
+  <!-- ================= WEAKNESS ================= -->
+  <section id="weakness" class="hide">
+    <div class="status">
+      <span class="meta">약점 분석</span>
+      <div class="bar" style="visibility:hidden"></div>
+      <button class="ghost chip" id="weakHome">← 처음으로</button>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">전체 요약</p>
+      <div class="stat">
+        <div><div class="k" id="wkStudied">0</div><div class="l">학습한 카드</div></div>
+        <div><div class="k" id="wkAcc">0%</div><div class="l">전체 정답률</div></div>
+        <div><div class="k" id="wkWeak">0</div><div class="l">약점 카드</div></div>
+      </div>
+      <button class="primary" id="weakDrillBtn" style="width:100%; margin-top:16px">약점 집중 세션 시작 →</button>
+      <p class="hint center" id="weakDrillNote" style="margin-top:8px"></p>
+      <p class="why">약점 = 1·2상자에 머물거나 정답률 65% 미만인 카드. 못 떠올린 것에 시간을 몰아주는 오답 우선 원칙의 실행 도구입니다.</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">과목별 취약도 <span class="hint">— 정답률 낮은 순</span></p>
+      <div id="wkChapters" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">취약 분류 TOP <span class="hint">— 집중 복습 후보</span></p>
+      <div id="wkGns" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">자주 틀리는 카드 <span class="hint">— 반복 실패(누수) 카드</span></p>
+      <div id="wkLeeches" style="margin-top:10px"></div>
+    </div>
+
+    <button class="ghost" id="weakHome2" style="width:100%; margin-top:4px">← 처음으로</button>
+  </section>
+
+  <p class="center meta" style="margin-top:30px">
+    <button class="ghost chip" id="importBtn">전체 1894문항 CSV 불러오기</button>
+    <input type="file" id="csvFile" accept=".csv" class="hide">
+    <button class="ghost chip" id="resetBtn">진도 초기화</button>
+  </p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ---------- embedded demo deck (40) : spans all chapters so interleaving is real ---------- */
+const DEMO = [
+["의학사","金元四大家","劉完素(劉河間)의 학파·핵심학설은?","寒凉派(主火). '六氣皆從火化'·'五志過極皆爲熱甚'. 宣明論方·素問玄機原病式.","기출보강"],
+["의학사","의가-저서","현존 最古의 鍼灸學 전문서와 저자는?","晉 皇甫謐 『鍼灸甲乙經』(259년경, 349穴 확정).","다이제스트"],
+["의학사","한국-근대","1885년 알렌이 세운 최초의 서양식 국립병원과 개명은?","廣惠院 → (同年) 濟衆院.","기출보강"],
+["의학사","기타","『黃帝內經』 기록이 최초로 등장하는 문헌은?","班固 『漢書·藝文志』 — '黃帝內經 十八卷'.","기출보강"],
+["음양오행","원문","『陰陽應象大論』 — 水火·左右·血氣의 배속은?","水火者陰陽之徵兆也, 左右者陰陽之道路也, 陰陽者血氣之男女也. (※血氣之'老少'는 오답)","기출보강"],
+["음양오행","치법","'求其屬' — 諸寒之而熱者 取之陰의 뜻은?","寒藥에도 열나면 眞陰(腎陰)부족 → 補陰(壯水之主). = 陽病治陰.","기출보강"],
+["음양오행","오사","相乘·相侮는 難經 五邪 중 무엇에 해당?","相乘=賊邪(從所不勝來). ※相侮는 微邪의 '방향'과 다름.","기출보강"],
+["음양오행","귀류","五臟所惡는? (『宣明五氣』)","肝惡風·心惡熱·脾惡濕·肺惡寒·腎惡燥.","기출보강"],
+["오운육기","오운-평기","五運의 平氣 五名은?","木=敷和, 火=升明, 土=備化, 金=審平, 水=靜順.","기출보강"],
+["오운육기","천간화","天干의 化五運(甲己…)은?","甲己=土, 乙庚=金, 丙辛=水, 丁壬=木, 戊癸=火.","다이제스트"],
+["오운육기","지지","地支의 五行 배속은?","寅卯=木, 巳午=火, 申酉=金, 亥子=水, 辰戌丑未=土.","기출보강"],
+["삼음삼양","개합추","三陰三陽의 開闔樞는? (『陰陽離合論』)","三陽: 太陽開·陽明闔·少陽樞. 三陰: 太陰開·厥陰闔·少陰樞.","다이제스트"],
+["삼음삼양","기혈","三陰三陽의 氣血多少는? (『血氣形志』)","太陽=多血少氣, 陽明=多氣多血, 少陽=少血多氣, 太陰=多氣少血, 少陰=少血多氣, 厥陰=多血少氣.","기출보강"],
+["삼음삼양","표리","三陰三陽의 표리관계는?","太陽↔少陰, 陽明↔太陰, 少陽↔厥陰.","기출보강"],
+["정기신혈","결기","『決氣』 六氣 정의(精·氣·津)는?","精=兩神相搏合而成形常先身生. 氣=上焦開發宣五穀味…若霧露之漑. 津=腠理發泄汗出溱溱.","기출보강"],
+["정기신혈","종기","宗氣의 기능(원문 포함)은?","胸中(膻中·氣海)에 積, 出於喉嚨以貫心脈而行呼吸. 心搏·呼吸 강약 조절.","기출보강"],
+["정기신혈","위기","衛氣의 원문 정의는? (『本藏』)","衛氣者, 所以溫分肉·充皮膚·肥腠理·司開闔者也. 水穀之悍氣.","기출보강"],
+["정기신혈","기","氣의 5대 기능은?","推動·溫煦·防禦·固攝·氣化.","다이제스트"],
+["정기신혈","본신","本神 — 五臟이 藏하는 것과 舍하는 神은?","肝藏血(舍魂)·脾藏營(舍意)·心藏脈(舍神)·肺藏氣(舍魄)·腎藏精(舍志).","기출보강"],
+["경락","팔회혈","八會穴 — 腑會·臟會·筋會·髓會는?","腑會=中脘, 臟會=章門, 筋會=陽陵泉, 髓會=絶骨.","기출보강"],
+["경락","팔회혈","八會穴 — 血會·骨會·脈會·氣會는?","血會=膈兪, 骨會=大杼, 脈會=太淵, 氣會=膻中.","기출보강"],
+["경락","원혈","五臟의 原穴은? (『九鍼十二原』)","肺=太淵, 心=神門, 心包=大陵, 肝=太衝, 脾=太白, 腎=太谿.","기출보강"],
+["경락","팔맥교회","八脈交會穴 — 公孫·內關·後谿·申脈은?","公孫→衝脈, 內關→陰維脈, 後谿→督脈, 申脈→陽蹻脈.","기출보강"],
+["경락","오수혈","五輸穴의 五行 배속(陰經)은?","陰經: 井=木, 滎=火, 兪=土, 經=金, 合=水.","기출보강"],
+["경락","유주순서","十二經脈 유주 순서(肺부터)는?","肺→大腸→胃→脾→心→小腸→膀胱→腎→心包→三焦→膽→肝→(肺).","기출보강"],
+["장상","십이관","十二官 — 心·肺·肝·膽은? (『靈蘭秘典論』)","心=君主之官, 肺=相傅之官(治節), 肝=將軍之官(謀慮), 膽=中正之官(決斷).","기출보강"],
+["장상","오장별론","五臟·六腑의 기능 특성 원문은?","五臟=藏精氣而不瀉,故滿而不能實. 六腑=傳化物而不藏,故實而不能滿.","기출보강"],
+["장상","칠충문","七衝門 7관문은? (『難經』 44難)","飛門(唇)·戶門(齒)·吸門(會厭)·賁門(胃上口)·幽門(胃下口)·闌門(大小腸交界)·魄門(肛門).","기출보강"],
+["장상","기항지부","奇恒之府의 구성은?","腦·髓·骨·脈·膽·女子胞. 藏而不瀉(藏과 유사), 中空(腑와 유사).","기출보강"],
+["장상","각여","'~之餘'(爪·髮·齒)의 배속은?","筋之餘=爪(肝), 血之餘=髮, 骨之餘=齒(腎).","기출보강"],
+["병인","병기십구조","'諸風掉眩'과 '諸濕腫滿'은 皆屬于?","諸風掉眩=皆屬于肝, 諸濕腫滿=皆屬于脾.","기출보강"],
+["병인","병기십구조","'諸寒收引'과 '諸痛痒瘡'은 皆屬于?","諸寒收引=皆屬于腎, 諸痛痒瘡=皆屬于心(火).","기출보강"],
+["병인","거통론","『擧痛論』 九氣 — 怒·喜·悲·恐·驚·思는?","怒則氣上·喜則氣緩·悲則氣消·恐則氣下·驚則氣亂·思則氣結.","기출보강"],
+["병인","육음","風邪의 성질·致病 특징은?","善行而數變(病位無定)·其性開泄·易襲陽位·爲百病之長.","기출보강"],
+["병인","내풍","內風(肝風內動)의 4유형은?","熱極生風·肝陽化風·陰虛風動·血虛生風(+血燥生風).","기출보강"],
+["상한","태양병","太陽中風과 太陽傷寒의 감별은?","中風(表虛)=發熱惡風·汗出·脈浮緩. 傷寒(表實)=無汗·身疼·脈浮緊.","다이제스트"],
+["상한","소양병","少陽病 提綱은? (263조)","口苦·咽乾·目眩. 主脈=弦. 治=和解(小柴胡湯).","다이제스트"],
+["본초","오미","五味의 작용(辛·甘·酸·苦·鹹)은?","辛散·甘緩(補)·酸收·苦泄(燥)·鹹軟堅.","다이제스트"],
+["진단","맥진","浮脈·沈脈의 主病은?","浮=表證(가볍게 눌러 나타남), 沈=裏證(깊이 눌러야).","다이제스트"],
+["변증","팔강","八綱은?","表裏·寒熱·虛實·陰陽.","다이제스트"],
+];
+
+/* ---------- state ---------- */
+const KEY="hanui_retrieval_v1";
+const INTERVALS=[0, 0, 1, 3, 7, 21]; // days by box (index 1..5)
+const EXAM = new Date("2027-01-01T00:00:00");   // 한의학개론 시험일
+function daysLeft(){ return Math.max(0, Math.ceil((EXAM - Date.now())/DAY)); }
+// 시험일 거버너: 시험이 가까울수록 간격을 압축해 남은 기간에 모든 카드를 다시 만남
+function governedInterval(box){
+  const base = INTERVALS[box];
+  const dl = daysLeft();
+  if(dl<=1) return 0;                              // 시험 임박: 매 세션 순환
+  const cap = Math.max(1, Math.floor(dl*0.4));     // 최장 간격 ≈ 남은 기간의 40%
+  return Math.min(base, cap, dl);                  // 시험일을 넘기지 않음
+}
+function reviewBuffer(dl){ return Math.min(21, Math.floor(dl*0.15)); }  // 마지막 ~15%(최대 21일)는 복습 전용
+function catchUpNew(){
+  const dl=daysLeft();
+  const unlearned = deck.filter(c=>{const s=mem.cards[c.id]; return !s||s.seen===0;}).length;
+  const learnDays = Math.max(1, dl - reviewBuffer(dl));
+  return dl>0 ? Math.ceil(unlearned/learnDays) : unlearned;   // 시험일 안전판: 남은 미학습을 남은 학습기간에 분배
+}
+function daysSince(dstr){ if(!dstr) return 0; return Math.max(0, Math.floor((Date.now()-new Date(dstr+"T00:00:00"))/DAY)); }
+function plannedBacklog(){   // 기본 목표(예: 26/일) 계획 대비 밀린 장수 — 며칠 거르면 증가
+  if(!mem.settings.startDate) return 0;
+  const base=mem.settings.dailyNew;
+  const shouldBy = Math.min(deck.length, base*daysSince(mem.settings.startDate)); // 어제까지 계획상 학습했어야 할 양
+  const learned = deck.filter(c=>{const s=mem.cards[c.id]; return s&&s.seen>0;}).length;
+  return Math.max(0, shouldBy - learned);
+}
+const RECOVER=3;   // 밀린 분량을 대략 3일에 나눠 회복
+// 하루 목표: (기본 + 밀린분/회복일)과 시험일 필요치 중 큰 값, 남은 미학습으로 상한
+function effectiveDaily(){
+  const unlearned = deck.filter(c=>{const s=mem.cards[c.id]; return !s||s.seen===0;}).length;
+  if(unlearned===0) return 0;
+  const base=mem.settings.dailyNew;
+  const planTarget = base + Math.ceil(plannedBacklog()/RECOVER);
+  return Math.min(unlearned, Math.max(planTarget, catchUpNew()));
+}
+let mem = load();          // { cards:{id:{box,due,seen,att,cor}}, calib:{1:{n,c}...}, streak:{last,count}, elab:{} }
+let deck = DEMO.map((r,i)=>({id:"D"+String(i+1).padStart(3,"0"), ch:r[0], gn:r[1], q:r[2], a:r[3], src:r[4]}));
+let opts = {mode:"interleave", size:20, rev:false, subj:null, recall:"self"};
+let queue=[], qi=0, cur=null, chosenConf=0, sessionLog=[], promoted=0;
+
+function load(){
+  let j=null;
+  try{ j=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  const base={cards:{}, calib:{1:{n:0,c:0},2:{n:0,c:0},3:{n:0,c:0},4:{n:0,c:0}}, streak:{last:null,count:0}, elab:{}, settings:{dailyNew:26,startDate:null}, newSeen:{}};
+  if(j){
+    j.settings = j.settings || {dailyNew:26,startDate:null};
+    if(!j.settings.dailyNew) j.settings.dailyNew=26;
+    if(!("startDate" in j.settings)) j.settings.startDate=null;
+    j.newSeen = j.newSeen || {};
+    return Object.assign(base, j);
+  }
+  return base;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(mem)); }catch(e){ /* in-memory only */ } }
+function cst(id){ if(!mem.cards[id]) mem.cards[id]={box:1,due:0,seen:0,att:0,cor:0}; return mem.cards[id]; }
+const todayStr=()=> new Date().toISOString().slice(0,10);
+const now=()=> Date.now();
+const DAY=86400000;
+
+/* ---------- start screen wiring ---------- */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+
+function seg(container, attr, cb){
+  $$(container+" button").forEach(b=>b.addEventListener("click",()=>{
+    $$(container+" button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); cb(b.getAttribute(attr), b);
+  }));
+}
+seg("#modeSeg","data-mode",(v)=>{ opts.mode=v; $("#subjPick").classList.toggle("hide", v!=="block"); refreshPool(); });
+seg("#sizeSeg","data-size",(v)=>{ opts.size=+v; refreshPool(); });
+seg("#recallSeg","data-recall",(v)=>{ opts.recall=v; });
+$("#revToggle").addEventListener("click",()=>{
+  opts.rev=!opts.rev;
+  $("#revToggle").textContent=opts.rev?"켜짐":"꺼짐";
+  $("#revToggle").classList.toggle("on",opts.rev);
+});
+
+function fillSubjects(){
+  const chs=[...new Set(deck.map(c=>c.ch))];
+  const sel=$("#subjSel"); sel.innerHTML="";
+  chs.forEach(c=>{ const o=document.createElement("option"); o.value=c; o.textContent=c+" ("+deck.filter(x=>x.ch===c).length+")"; sel.appendChild(o); });
+  sel.addEventListener("change",()=>{opts.subj=sel.value; refreshPool();});
+  opts.subj=chs[0];
+}
+
+function candidatePool(){
+  let pool=deck.slice();
+  if(opts.mode==="block" && opts.subj) pool=pool.filter(c=>c.ch===opts.subj);
+  return pool;
+}
+function dueList(){
+  const t=now();
+  return candidatePool().filter(c=>{ const s=mem.cards[c.id]; return !s || s.due<=t; });
+}
+function refreshPool(){
+  const t=now(); const pool0=candidatePool();
+  const reviews = pool0.filter(c=>{const s=mem.cards[c.id]; return s&&s.seen>0&&s.due<=t;}).length;
+  const today=todayStr(); const budget=Math.max(0, effectiveDaily()-(mem.newSeen[today]||0));
+  const newAvail = Math.min(budget, pool0.filter(c=>{const s=mem.cards[c.id]; return !s||s.seen===0;}).length);
+  const ready = Math.min(opts.size, reviews+newAvail);
+  $("#poolInfo").textContent = `이번 세션 준비 · 복습 ${reviews}장 + 신규 ${newAvail}장 → ${ready}장`;
+  updateDday();
+  renderHome();
+}
+function updateDday(){
+  const dl=daysLeft();
+  $("#ddayN").textContent=dl;
+  const base = mem.settings.dailyNew;
+  const eff = effectiveDaily();
+  const unlearned = deck.filter(c=>{const s=mem.cards[c.id]; return !s||s.seen===0;}).length;
+  const dueToday = deck.filter(c=>{const s=mem.cards[c.id]; return s&&s.seen>0&&s.due<=now();}).length;
+  $("#paceN").textContent=eff;
+  $("#dueN").textContent=dueToday;
+  const y=new Date(EXAM); $("#examDate").textContent=`${y.getFullYear()}. ${y.getMonth()+1}. ${y.getDate()}.`;
+  $("#ddayBar").classList.toggle("warn", dl<=30 || eff>base);
+  if($("#dnVal") && document.activeElement!==$("#dnVal")) $("#dnVal").value=base;
+  const el=$("#paceInsight"); if(!el) return;
+  const backlog=plannedBacklog(); const behindDays=base>0?Math.ceil(backlog/base):0;
+  if(unlearned===0){ el.textContent="전 범위 1회 학습 완료 — 이제 복습 위주 단계입니다."; }
+  else if(backlog>0 && eff>base){
+    const heavy=eff>base*2;
+    el.innerHTML=`계획보다 <b style="color:var(--amber)">${backlog}장(≈${behindDays}일)</b> 밀림 → 오늘 목표 <b style="color:${heavy?'var(--cinnabar)':'var(--amber)'}">${eff}장</b> (기본 ${base}+${eff-base}) · 며칠 유지하면 회복`
+      + (heavy? ` · 밀린 양이 큽니다` : ``);
+  } else if(eff>base){
+    el.innerHTML=`시험일 임박 · 완주 위해 오늘 목표 <b style="color:var(--amber)">${eff}장</b>으로 자동 상향`;
+  } else {
+    const passDays=Math.ceil(unlearned/Math.max(1,eff));
+    el.innerHTML=`일정 여유 · 이 속도면 약 <b style="color:var(--jade)">${passDays}일</b> 뒤(D−${dl-passDays}) 전 범위 1회 완주`;
+  }
+}
+$("#dnVal").addEventListener("change",()=>{
+  let v=parseInt($("#dnVal").value,10); if(isNaN(v)) v=26; v=Math.max(1,Math.min(300,v));
+  mem.settings.dailyNew=v; $("#dnVal").value=v; save(); refreshPool();
+});
+
+/* ---------- home stats ---------- */
+function renderHome(){
+  const ids=Object.keys(mem.cards);
+  const seen=ids.filter(id=>mem.cards[id].seen>0).length;
+  const mastered=ids.filter(id=>mem.cards[id].box>=5).length;
+  const t=now();
+  const due=deck.filter(c=>{const s=mem.cards[c.id]; return !s||s.due<=t;}).length;
+  $("#stStreak").textContent=mem.streak.count||0;
+  $("#stSeen").textContent=seen;
+  $("#stMastered").textContent=mastered;
+  $("#stDue").textContent=due;
+  // box distribution
+  const counts=[0,0,0,0,0];
+  deck.forEach(c=>{ const s=mem.cards[c.id]; const b=s?s.box:1; counts[b-1]++; });
+  const max=Math.max(1,...counts);
+  $$("#boxDist > span").forEach((sp,i)=>{ sp.style.height=(6+counts[i]/max*100)+"%"; sp.title=counts[i]+"장"; });
+}
+
+/* ---------- session ---------- */
+function buildQueue(){
+  const t=now();
+  const pool0=candidatePool();
+  const reviews = pool0.filter(c=>{const s=mem.cards[c.id]; return s && s.seen>0 && s.due<=t;});
+  const today=todayStr();
+  const budget = Math.max(0, effectiveDaily() - (mem.newSeen[today]||0));
+  let news = pool0.filter(c=>{const s=mem.cards[c.id]; return !s || s.seen===0;});
+  news = shuffle(news).slice(0, budget);
+  let pool = reviews.concat(news);
+  // error-first: box1/unseen first, then by due asc
+  pool.sort((a,b)=>{
+    const sa=mem.cards[a.id], sb=mem.cards[b.id];
+    const ba=sa?sa.box:1, bb=sb?sb.box:1;
+    if(ba!==bb) return ba-bb;
+    return (sa?sa.due:0)-(sb?sb.due:0);
+  });
+  pool=pool.slice(0, opts.size);
+  if(opts.mode==="interleave") pool=interleave(shuffle(pool));
+  return pool.map(c=>({card:c, rev: opts.rev && reversible(c) && Math.random()<0.5}));
+}
+function reversible(c){ return c.a.length<=40 && !c.a.includes("→") && (c.a.match(/[.·]/g)||[]).length<=2; }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function interleave(a){
+  const out=[]; const pool=a.slice();
+  while(pool.length){
+    let idx=pool.findIndex(c=> !out.length || c.ch!==out[out.length-1].ch);
+    if(idx<0) idx=0;
+    out.push(pool.splice(idx,1)[0]);
+  }
+  return out;
+}
+
+function startSession(){
+  queue=buildQueue();
+  if(!queue.length){
+    const today=todayStr(); const introduced=mem.newSeen[today]||0;
+    toast(introduced>0 ? `오늘 신규 ${introduced}장을 채웠고, 지금 복습할 카드도 없어요. 내일 또는 복습 예정 시각에 오세요.` : "지금 풀 카드가 없어요. 잠시 뒤 다시 오세요.");
+    return;
+  }
+  qi=0; sessionLog=[]; promoted=0;
+  $("#ddayMini").textContent=daysLeft();
+  $("#start").classList.add("hide"); $("#summary").classList.add("hide");
+  $("#session").classList.remove("hide");
+  showCard();
+}
+function showCard(){
+  const item=queue[qi]; cur=item; chosenConf=0;
+  const c=item.card;
+  $("#progLabel").textContent=`${qi+1} / ${queue.length}`;
+  $("#progFill").style.width=((qi)/queue.length*100)+"%";
+  $("#chBadge").textContent=c.ch+" · "+c.gn;
+  $("#revBadge").classList.toggle("hide", !item.rev);
+  $("#qEyebrow").textContent = item.rev ? "역방향 인출 · 이 설명에 해당하는 개념은?"
+    : (opts.recall==="progressive" ? "능동 인출 · 답을 떠올린 뒤 하나씩 확인" : "능동 인출 · 소리 내어/머릿속으로 답을 떠올리세요");
+  $("#recallPrompt").textContent = opts.recall==="progressive"
+    ? "조각을 하나씩 떠올린 뒤 탭해서 확인하세요. 타이핑은 필요 없습니다."
+    : "답이 떠오르면 확신도를 고르고 공개하세요. 타이핑은 필요 없습니다.";
+  $("#qText").textContent = item.rev ? c.a : c.q;
+  // reset attempt UI
+  $("#memoInput").value=""; $("#elabInput").value="";
+  $("#attemptBox").classList.remove("hide"); $("#revealBox").classList.add("hide");
+  $$("#confSeg button").forEach(b=>b.classList.remove("on"));
+  $("#revealBtn").disabled=true; $("#confHint").classList.remove("hide");
+  liveBoxes();
+}
+$$("#confSeg button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#confSeg button").forEach(x=>x.classList.remove("on")); b.classList.add("on");
+  chosenConf=+b.getAttribute("data-conf");
+  $("#revealBtn").disabled=false; $("#confHint").classList.add("hide");
+}));
+
+function reveal(){
+  if(chosenConf===0) return;
+  const item=cur, c=item.card;
+  const typed=$("#memoInput").value.trim();
+  $("#attemptBox").classList.add("hide"); $("#revealBox").classList.remove("hide");
+  if(typed){ $("#yourAns").classList.remove("hide"); $("#yourAnsText").textContent=typed; }
+  else $("#yourAns").classList.add("hide");
+  renderAnswer(item);
+  $("#srcText").textContent = "출처 · "+c.src+"  ·  "+c.id;
+  if(mem.elab[c.id]) $("#elabInput").value=mem.elab[c.id];
+}
+let curFull="";
+function renderAnswer(item){
+  const full = item.rev ? item.card.q : item.card.a;
+  curFull=full;
+  const at=$("#aText");
+  if(opts.recall!=="progressive"){
+    at.textContent=full; $("#aFullBtn").classList.add("hide");
+    $("#aEyebrow").textContent="정답 · 즉각 피드백";
+    return;
+  }
+  $("#aEyebrow").textContent="정답 · 조각을 탭해서 확인";
+  at.innerHTML="";
+  const parts=splitAnswer(full);
+  parts.forEach((p,idx)=>{
+    const b=document.createElement("span");
+    b.className="blank"; b.textContent=mask(p); b.tabIndex=0; b.title="탭하여 확인";
+    const show=()=>{ b.textContent=p; b.classList.add("shown"); };
+    b.addEventListener("click",show);
+    b.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();show();} });
+    at.appendChild(b);
+    if(idx<parts.length-1){ const s=document.createElement("span"); s.className="sep"; s.textContent=" · "; at.appendChild(s); }
+  });
+  $("#aFullBtn").classList.toggle("hide", parts.length<=1);
+}
+function splitAnswer(s){ const p=s.split(/\s*[,·;]\s*/).map(x=>x.trim()).filter(Boolean); return p.length?p:[s]; }
+function mask(p){ const han=[...p].filter(ch=>/[\u4e00-\u9fff]/.test(ch)).length; const n=Math.min(6,Math.max(2,han||[...p].length)); return "▢".repeat(n); }
+$("#revealBtn").addEventListener("click",reveal);
+$("#aFullBtn").addEventListener("click",()=>{ $("#aText").textContent=curFull; $("#aFullBtn").classList.add("hide"); });
+
+$$("#scoreSeg button").forEach(b=>b.addEventListener("click",()=>score(b.getAttribute("data-score"))));
+function score(kind){
+  const c=cur.card, s=cst(c.id);
+  const correct = kind==="good";
+  if(!mem.settings.startDate) mem.settings.startDate=todayStr();
+  // metacognition calibration
+  mem.calib[chosenConf].n++; if(correct) mem.calib[chosenConf].c++;
+  // Leitner update
+  const wasNew = s.seen===0;
+  s.seen++; s.att++; if(correct) s.cor++;
+  if(wasNew){ const td=todayStr(); mem.newSeen[td]=(mem.newSeen[td]||0)+1; }
+  const oldBox=s.box;
+  if(kind==="good"){ s.box=Math.min(5,s.box+1); }
+  else if(kind==="hard"){ /* stay */ }
+  else { s.box=1; }
+  if(s.box>oldBox) promoted++;
+  s.due = now() + governedInterval(s.box)*DAY;
+  // save elaboration
+  const el=$("#elabInput").value.trim(); if(el) mem.elab[c.id]=el;
+  sessionLog.push({conf:chosenConf, correct, kind});
+  bumpStreak();
+  save();
+  qi++;
+  if(qi>=queue.length) endSession(); else showCard();
+}
+
+function bumpStreak(){
+  const t=todayStr();
+  if(mem.streak.last===t) return;
+  const y=new Date(Date.now()-DAY).toISOString().slice(0,10);
+  mem.streak.count = (mem.streak.last===y) ? (mem.streak.count+1) : 1;
+  mem.streak.last=t;
+}
+
+function liveBoxes(){
+  const counts=[0,0,0,0,0];
+  deck.forEach(c=>{ const s=mem.cards[c.id]; const b=s?s.box:1; counts[b-1]++; });
+  const max=Math.max(1,...counts);
+  $$("#boxDistLive > span").forEach((sp,i)=>{ sp.style.height=(6+counts[i]/max*100)+"%"; });
+}
+
+/* ---------- summary + calibration signature ---------- */
+function endSession(){
+  $("#session").classList.add("hide"); $("#summary").classList.remove("hide");
+  const n=sessionLog.length, good=sessionLog.filter(x=>x.correct).length;
+  const acc = n? Math.round(good/n*100):0;
+  $("#sumAcc").textContent=acc+"%";
+  $("#sumN").textContent=n;
+  $("#sumPromoted").textContent=promoted;
+  $("#sumTitle").textContent = acc>=80?"훌륭합니다":acc>=55?"좋아요, 계속":"약점을 잡았어요";
+  drawCalibration();
+  const dl=daysLeft();
+  const unlearned = deck.filter(c=>{const s=mem.cards[c.id]; return !s||s.seen===0;}).length;
+  const dueNow = deck.filter(c=>{const s=mem.cards[c.id]; return s&&s.seen>0&&s.due<=now();}).length;
+  const buffer=Math.min(21,Math.floor(dl*0.15)); const learnDays=Math.max(1,dl-buffer);
+  const newPerDay = dl>0?Math.ceil(unlearned/learnDays):unlearned;
+  $("#sumPace").innerHTML = `시험까지 <b style="color:var(--hanji)">D−${dl}</b> · 하루 신규 <b style="color:var(--jade)">${newPerDay}장</b>`
+    + (dueNow?` · 지금 복습 예정 ${dueNow}장` : ` · 밀린 복습 없음`)
+    + ` · 미학습 ${unlearned}/${deck.length}`;
+  renderHome();
+}
+
+function drawCalibration(){
+  const labels=["없음","낮음","보통","높음"];
+  const W=340,H=200, padL=34,padB=34,padT=10,padR=10;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const x=i=> padL + (plotW)*(i+0.5)/4;
+  const y=p=> padT + plotH*(1-p/100);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:380px; display:block; margin:0 auto" font-family="Malgun Gothic, system-ui, sans-serif">`;
+  // grid
+  for(let g=0;g<=100;g+=25){
+    svg+=`<line x1="${padL}" y1="${y(g)}" x2="${W-padR}" y2="${y(g)}" stroke="#3c3427" stroke-width="1"/>`;
+    svg+=`<text x="${padL-6}" y="${y(g)+3}" fill="#6f6552" font-size="9" text-anchor="end">${g}</text>`;
+  }
+  // ideal calibration reference (25,50,75,100 across the 4 bins)
+  const ideal=[25,50,75,100];
+  let ip=ideal.map((p,i)=>`${x(i)},${y(p)}`).join(" ");
+  svg+=`<polyline points="${ip}" fill="none" stroke="#6f93b4" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.8"/>`;
+  svg+=`<text x="${W-padR}" y="${y(100)+11}" fill="#6f93b4" font-size="9" text-anchor="end">기준선</text>`;
+  // user points
+  let overconf=0, bins=0, pts="";
+  for(let i=0;i<4;i++){
+    const cb=mem.calib[i+1]; if(!cb || cb.n===0) continue;
+    const p=Math.round(cb.c/cb.n*100); bins++;
+    const px=x(i), py=y(p);
+    pts+=`${px},${py} `;
+    const col = p>=ideal[i]-8 ? "#79b394" : "#c85a42";
+    if(p < ideal[i]-8) overconf++;
+    svg+=`<circle cx="${px}" cy="${py}" r="5" fill="${col}" stroke="#16130e" stroke-width="1.5"/>`;
+    svg+=`<text x="${px}" y="${py-9}" fill="${col}" font-size="9" text-anchor="middle">${p}%·n${cb.n}</text>`;
+  }
+  if(pts.trim().split(" ").length>1)
+    svg+=`<polyline points="${pts.trim()}" fill="none" stroke="#e7dcc4" stroke-width="1.5" opacity="0.5"/>`;
+  // x labels
+  labels.forEach((l,i)=> svg+=`<text x="${x(i)}" y="${H-padB+14}" fill="#9d917a" font-size="10" text-anchor="middle">${l}</text>`);
+  svg+=`<text x="${padL}" y="${H-4}" fill="#6f6552" font-size="9">← 확신도</text>`;
+  svg+=`</svg>`;
+  $("#calibWrap").innerHTML=svg;
+  // note
+  let note;
+  if(bins===0) note="아직 데이터가 적어요. 여러 세션을 하면 곡선이 채워집니다.";
+  else if(overconf>=1) note="높은 확신도에서 정답률이 기준선보다 낮은 구간이 있어요 — 아는 것 같지만 덜 여문 부분입니다. 그 카드를 확실히 인출될 때까지 반복하세요.";
+  else note="확신도와 실제 정답률이 잘 맞습니다. 메타인지가 잘 보정되어 있어요.";
+  $("#calibNote").textContent=note;
+}
+
+/* ---------- buttons ---------- */
+$("#startBtn").addEventListener("click",startSession);
+$("#endBtn").addEventListener("click",()=>{ if(sessionLog.length) endSession(); else goHome(); });
+$("#againBtn").addEventListener("click",()=>{ opts_from_state(); startSession(); });
+$("#homeBtn").addEventListener("click",goHome);
+function opts_from_state(){ /* keep same opts */ }
+function goHome(){
+  $("#summary").classList.add("hide"); $("#session").classList.add("hide");
+  $("#start").classList.remove("hide"); refreshPool();
+}
+
+/* CSV import: 번호,과목,분류,문제,정답,출처,id */
+$("#importBtn").addEventListener("click",()=>$("#csvFile").click());
+$("#csvFile").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ importCSV(r.result); }catch(err){ toast("CSV를 읽지 못했어요. 형식을 확인해 주세요."); } };
+  r.readAsText(f,"utf-8");
+});
+function importCSV(text){
+  const rows=parseCSV(text);
+  if(!rows.length){ toast("빈 파일이에요."); return; }
+  // find header
+  let start=0; const head=rows[0].map(s=>s.trim());
+  const hi = k => head.indexOf(k);
+  const map = head.includes("문제") ? {ch:hi("과목"),gn:hi("분류"),q:hi("문제"),a:hi("정답"),src:hi("출처"),id:hi("id")} : null;
+  if(map) start=1;
+  const out=[]; 
+  for(let i=start;i<rows.length;i++){
+    const r=rows[i]; if(r.length<4) continue;
+    const c = map ? {id:r[map.id]||("C"+i), ch:r[map.ch]||"기타", gn:r[map.gn]||"", q:r[map.q]||"", a:r[map.a]||"", src:r[map.src]||"다이제스트"}
+                  : {id:r[6]||("C"+i), ch:r[1]||"기타", gn:r[2]||"", q:r[3]||"", a:r[4]||"", src:r[5]||"다이제스트"};
+    if(c.q && c.a) out.push(c);
+  }
+  if(!out.length){ toast("카드를 찾지 못했어요."); return; }
+  deck=out; fillSubjects(); refreshPool();
+  toast(`전체 ${out.length}장을 불러왔어요.`);
+}
+function parseCSV(text){
+  const rows=[]; let row=[], cell="", q=false;
+  text=text.replace(/\r/g,"");
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(q){
+      if(ch==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else q=false; }
+      else cell+=ch;
+    } else {
+      if(ch==='"') q=true;
+      else if(ch===","){ row.push(cell); cell=""; }
+      else if(ch==="\n"){ row.push(cell); rows.push(row); row=[]; cell=""; }
+      else cell+=ch;
+    }
+  }
+  if(cell.length||row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r=>r.length && r.some(c=>c!==""));
+}
+
+$("#resetBtn").addEventListener("click",()=>{
+  if(!confirm("모든 학습 진도(상자·확신도·연속일)를 지울까요? 되돌릴 수 없습니다.")) return;
+  mem={cards:{}, calib:{1:{n:0,c:0},2:{n:0,c:0},3:{n:0,c:0},4:{n:0,c:0}}, streak:{last:null,count:0}, elab:{}};
+  save(); refreshPool(); toast("초기화했어요.");
+});
+
+/* keyboard */
+document.addEventListener("keydown",e=>{
+  if($("#session").classList.contains("hide")) return;
+  const revealed=!$("#revealBox").classList.contains("hide");
+  if(!revealed){
+    if((e.key===" "||e.key==="Enter") && !$("#revealBtn").disabled && document.activeElement.id!=="memoInput"){ e.preventDefault(); reveal(); }
+    if(["1","2","3","4"].includes(e.key) && document.activeElement.id!=="memoInput"){ const b=$(`#confSeg button[data-conf="${e.key}"]`); if(b) b.click(); }
+  } else {
+    if(document.activeElement.id==="elabInput") return;
+    if(e.key==="1") score("wrong");
+    else if(e.key==="2") score("hard");
+    else if(e.key==="3") score("good");
+  }
+});
+
+/* toast */
+let tt;
+function toast(msg){ const el=$("#toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("show"),2600); }
+
+/* ---------- weakness analysis ---------- */
+function esc(s){ return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
+function trunc(s,n){ s=String(s); return [...s].length>n ? [...s].slice(0,n).join("")+"…" : s; }
+function accColor(a){ return a>=0.8?"var(--jade)":a>=0.6?"var(--amber)":"var(--cinnabar)"; }
+function isWeak(s){ return s && s.seen>0 && (s.box<=2 || (s.att>0 && s.cor/s.att<0.65)); }
+
+function analyzeWeak(){
+  const chMap={}, gnMap={}, leeches=[];
+  deck.forEach(c=>{
+    const s=mem.cards[c.id];
+    const cm = chMap[c.ch] || (chMap[c.ch]={att:0,cor:0,seen:0,total:0,low:0});
+    cm.total++;
+    if(s&&s.seen>0){ cm.seen++; cm.att+=s.att; cm.cor+=s.cor; if(s.box<=2) cm.low++; }
+    const key=c.ch+" › "+c.gn;
+    const gm = gnMap[key] || (gnMap[key]={att:0,cor:0,seen:0,ch:c.ch,gn:c.gn});
+    if(s&&s.seen>0){ gm.seen++; gm.att+=s.att; gm.cor+=s.cor; }
+    if(s&&s.att>=3 && s.cor/s.att<0.6) leeches.push({c, acc:s.cor/s.att, att:s.att, box:s.box});
+    else if(s&&s.seen>=2 && s.box<=1) leeches.push({c, acc:s.att?s.cor/s.att:0, att:s.att, box:s.box});
+  });
+  return {chMap, gnMap, leeches};
+}
+
+function showWeakness(){
+  $("#start").classList.add("hide"); $("#summary").classList.add("hide"); $("#session").classList.add("hide");
+  $("#weakness").classList.remove("hide");
+  renderWeakness();
+  window.scrollTo(0,0);
+}
+function renderWeakness(){
+  const {chMap,gnMap,leeches}=analyzeWeak();
+  let tAtt=0,tCor=0,studied=0,weak=0;
+  deck.forEach(c=>{const s=mem.cards[c.id]; if(s&&s.seen>0){studied++; tAtt+=s.att; tCor+=s.cor; if(isWeak(s)) weak++;}});
+  $("#wkStudied").textContent=studied;
+  $("#wkAcc").textContent=(tAtt?Math.round(tCor/tAtt*100):0)+"%";
+  $("#wkWeak").textContent=weak;
+  $("#weakDrillNote").textContent = weak? `약점 ${weak}장을 집중 인출합니다` : "아직 약점으로 분류된 카드가 없어요 — 세션을 더 진행해 보세요";
+  $("#weakDrillBtn").disabled = weak===0;
+
+  const chs=Object.entries(chMap).filter(([k,v])=>v.seen>0)
+    .map(([k,v])=>({k, acc:v.att?v.cor/v.att:0, seen:v.seen, total:v.total, low:v.low}))
+    .sort((a,b)=>a.acc-b.acc);
+  const chEl=$("#wkChapters");
+  chEl.innerHTML = chs.length ? chs.map(c=>{
+    const p=Math.round(c.acc*100);
+    return `<div class="wkrow"><span class="nm">${esc(c.k)}</span><span class="track"><i style="width:${p}%; background:${accColor(c.acc)}"></i></span><span class="pct" style="color:${accColor(c.acc)}">${p}%</span></div>`
+      + `<p class="wksub">학습 ${c.seen}/${c.total} · 미숙(1·2상자) ${c.low}장</p>`;
+  }).join("") : '<p class="wkempty">아직 학습한 카드가 없어요. 세션을 진행하면 분석됩니다.</p>';
+
+  const gns=Object.values(gnMap).filter(v=>v.seen>=3).map(v=>({...v, acc:v.att?v.cor/v.att:0}))
+    .sort((a,b)=>a.acc-b.acc).slice(0,8);
+  $("#wkGns").innerHTML = gns.length ? '<div class="wklist">'+gns.map(g=>{
+    const p=Math.round(g.acc*100);
+    return `<div class="li"><span class="q">${esc(g.ch)} › ${esc(g.gn)}</span><span class="tag" style="color:${accColor(g.acc)}">${p}% · ${g.seen}장</span></div>`;
+  }).join("")+'</div>' : '<p class="wkempty">분류별 분석은 각 분류를 3회 이상 학습하면 표시됩니다.</p>';
+
+  const seen=new Set(), lch=[];
+  leeches.sort((a,b)=>a.acc-b.acc).forEach(l=>{ if(!seen.has(l.c.id)){seen.add(l.c.id); lch.push(l);} });
+  const top=lch.slice(0,12);
+  $("#wkLeeches").innerHTML = top.length ? '<div class="wklist">'+top.map(l=>{
+    const p=Math.round(l.acc*100);
+    return `<div class="li"><span class="q">${esc(trunc(l.c.q,40))}</span><span class="tag">${p}% · ${l.att}회 · ${esc(l.c.gn)}</span></div>`;
+  }).join("")+'</div>' : '<p class="wkempty">반복 실패 카드가 없어요 — 좋은 신호입니다.</p>';
+}
+
+function startWeakSession(){
+  const pool0=candidatePool();
+  let weak=pool0.filter(c=>isWeak(mem.cards[c.id]));
+  if(!weak.length){ toast("약점 카드가 없어요."); return; }
+  weak.sort((a,b)=>{ const sa=mem.cards[a.id],sb=mem.cards[b.id];
+    if(sa.box!==sb.box) return sa.box-sb.box;
+    return (sa.att?sa.cor/sa.att:0)-(sb.att?sb.cor/sb.att:0); });
+  weak=weak.slice(0, opts.size);
+  if(opts.mode==="interleave") weak=interleave(shuffle(weak));
+  queue=weak.map(c=>({card:c, rev: opts.rev && reversible(c) && Math.random()<0.5}));
+  qi=0; sessionLog=[]; promoted=0;
+  $("#ddayMini").textContent=daysLeft();
+  $("#weakness").classList.add("hide"); $("#start").classList.add("hide"); $("#summary").classList.add("hide");
+  $("#session").classList.remove("hide");
+  showCard();
+}
+
+$("#weakBtn").addEventListener("click",showWeakness);
+$("#weakHome").addEventListener("click",()=>{ $("#weakness").classList.add("hide"); goHome(); });
+$("#weakHome2").addEventListener("click",()=>{ $("#weakness").classList.add("hide"); goHome(); });
+$("#weakDrillBtn").addEventListener("click",startWeakSession);
+
+/* init */
+fillSubjects(); refreshPool();
+</script>
+</body>
+</html>
